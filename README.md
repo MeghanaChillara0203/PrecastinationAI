@@ -1,241 +1,268 @@
-# PrecastinationAI
+# 🌟 PrecastinationAI
 
-PrecastinationAI is an intelligent, companion-driven task management application designed to help procrastinators get things done. Unlike standard todo lists, it uses AI to actively verify your work, offer help when you're stuck, and provide emotional support through interactive animated characters.
+### *“An AI Companion That Helps You Do the Things You Keep Avoiding.”*
 
-## Features
+PrecastinationAI is a multi-agent productivity companion designed for people who struggle with procrastination. Unlike simple todo apps, PrecastinationAI verifies your work, guides you when you’re stuck, and learns your habits over time. It provides accountability, learning support, and emotional engagement through animated characters and autonomous agents.
 
-- **Interactive Kanban Board**: Drag-and-drop tasks between "To Do" and "In Progress".
-- **AI Companions**: Choose from 6 animated characters (Panda, Bear, Cat, Dog, etc.) that react to your progress with real-time animations (Success, Failure, Thinking).
-- **AI Verification**: The "Procrastination Police" checks if you actually did the work via quizzes or context verification.
-- **Smart Assistance**: Stuck on a task? The AI generates study guides, research summaries, and networking message drafts.
-- **Documents & Reporting**: Auto-generate Excel/CSV progress reports of your tasks.
-- **Gamified Progress**: Visual tracking of your productivity.
-
-Here is a **clean, polished, professional README** tailored to your exact repo, architecture, agents, notebooks, and execution flow.
-
-It combines:
-
-* **Multi-Agent Backend** (FastAPI + Google Gemini)
-* **Interactive Frontend** (React + Vite + Tailwind)
-* **Local Data Persistence**
-* **Smart Task Verification**
-* **Personalized Help & Learning**
+This project was built for the **Google × Kaggle Agents Intensive Capstone (2025)** and demonstrates advanced multi-agent system design, memory, session flow, and AI-powered assistance.
 
 ---
 
-# 📘 **Notebook Overview**
+# 📌 Table of Contents
 
-### **1. `ProcrastinationAI.ipynb` — Agent Creation Notebook**
-
-This notebook contains:
-
-✔ Development of all **AI agents**
-✔ Iterative testing of agent logic
-✔ Running FastAPI in Kaggle
-✔ Direct interaction with agents
-✔ Final API-ready versions of TaskAgent, QuizAgent, HelpAgent & MemoryAgent
-
-### **2. `ProcrastinationAI-Backend.ipynb` — Backend + Frontend Assembly**
-
-This notebook contains:
-
-✔ Writing the FastAPI backend
-✔ Saving agent files to `/backend/agents`
-✔ Generating the frontend folder structure
-✔ Writing all React, TypeScript, and service files programmatically
-✔ Running and testing the backend API endpoints
-✔ Final folder structure ready for download / deployment
+1. [Vision](#vision)
+2. [Features](#features)
+3. [Architecture Overview](#architecture-overview)
+4. [Agents Explained](#agents-explained)
+5. [Folder Structure](#folder-structure)
+6. [Prerequisites](#prerequisites)
+7. [Installation & Running Locally](#installation--running-locally)
+8. [Running in Kaggle](#running-in-kaggle)
+9. [API Routes](#api-routes)
+10. [Tech Stack](#tech-stack)
+11. [Future Work](#future-work)
 
 ---
 
-# 🧠 **AI Agent Architecture**
+# 🎯 Vision
 
-ProcrastinationAI uses **four fully independent agents**, orchestrated by a master controller.
-Each agent has a single responsibility and communicates only through normalized task packets.
+Most productivity tools fail because they treat procrastination as a scheduling issue.
+But procrastination is emotional, cognitive, and behavioral.
+What people really need is:
 
----
+* A **companion**, not a checklist
+* **Verification**, not self-reported progress
+* **Guidance**, not generic motivation
+* **Memory**, not isolated tasks
+* **Accountability**, not guilt
 
-## 🔹 **1. TaskAgent — Task Normalization & Routing**
+PrecastinationAI reimagines productivity as a **relationship**:
 
-**Purpose:**
-Take raw user tasks and convert them into a clean, structured format the other agents can process.
-
-**Capabilities:**
-
-* Normalizes task titles & descriptions
-* Extracts category, keywords, complexity
-* Decides next step:
-  → **QuizAgent** (if learning/research task)
-  → **HelpAgent** (if user needs guidance)
-  → **MemoryAgent** (if updating long-term knowledge)
-
-**Output Example:**
-
-```json
-{
-  "normalizedTitle": "Learn React Fundamentals",
-  "normalizedDescription": "Study core React concepts.",
-  "category": "EDUCATION",
-  "keywords": ["React", "JSX", "hooks"],
-  "complexity": 4,
-  "nextAgent": "HelpAgent"
-}
-```
+> “An AI partner who cares enough to help you start, stay, and finish.”
 
 ---
 
-## 🔹 **2. QuizAgent — Adaptive Knowledge Verification**
+# 🚀 Features
 
-**Purpose:**
-Ensure the user has actually learned/researched what they claim.
+### ✔ Multi-Agent System
 
-**Capabilities:**
+Four autonomous agents collaborate to handle normalization, verification, help, and long-term memory.
 
-* Generates dynamic quizzes based on task context
-* Grades user answers
-* Determines pass/fail state
-* Pass → MemoryAgent
-* Fail → HelpAgent
+### ✔ AI Verification (“Procrastination Police”)
 
-**Quiz Example Output:**
+Quizzes and contextual checks ensure tasks were actually completed.
 
-```json
-{
-  "questions": [
-    {
-      "q": "What is JSX used for in React?",
-      "choices": ["Styling", "Logic", "UI markup", "Animations"],
-      "answer": 2
-    }
-  ]
-}
-```
+### ✔ Intelligent Help Mode
 
----
+If you get stuck or fail a quiz, HelpAgent generates:
 
-## 🔹 **3. HelpAgent — Guidance, Coaching & Resources**
+* step-by-step guides
+* curated resources
+* plans
+* study breakdowns
+* networking message drafts
 
-**Purpose:**
-Provide intelligent help to unblock users.
+### ✔ Companion Characters
 
-**Capabilities:**
+Choose from multiple animated avatars (panda, cat, dog, etc.) that react emotionally to your progress.
 
-* Generates step-by-step guides
-* Provides explanations in the user's preferred character style
-* Provides actionable resources
-* Reacts when verification fails
+### ✔ Kanban Task Management
 
-**Output Example:**
+Drag & drop between *To Do* → *In Progress* → *Completed*.
 
-```json
-{
-  "summary": "Learn fundamental React concepts...",
-  "steps": ["Understand JSX", "Learn components", ...],
-  "resources": [{ "title": "React Docs", "url": "https://react.dev" }]
-}
-```
+### ✔ Calendar View
+
+Visualize tasks by due date.
+
+### ✔ Document Generation
+
+AI-powered CSV productivity reports.
+
+### ✔ Local JSON Persistence
+
+Tasks and profiles saved locally.
 
 ---
 
-## 🔹 **4. MemoryAgent — Long-Term User Learning**
+# 🧠 Architecture Overview
 
-**Purpose:**
-Store what the user has learned to avoid repeating help.
-
-**Capabilities:**
-
-* Updates persistent memory
-* Enhances future help generation
-* Tracks knowledge progression
-
-Memory is saved into:
+### High-Level Pipeline
 
 ```
-backend/data/tasks.json
-backend/data/profile.json
+Frontend → Backend → OrchestratorAgent → Sub-agents → Response → Frontend
 ```
+
+### Agents & Routing
+
+1. **TaskAgent**
+
+   * Normalizes raw input
+   * Determines complexity, keywords, category
+   * Routes to next agent
+
+2. **QuizAgent**
+
+   * Generates quizzes
+   * Grades answers
+   * Pass → MemoryAgent
+   * Fail → HelpAgent
+
+3. **HelpAgent**
+
+   * Produces guides, explanations, resources, drafts
+
+4. **MemoryAgent**
+
+   * Updates long-term mastery
+   * Suggests next tasks
+
+The backend runs these agents through `OrchestratorAgent`.
 
 ---
 
-# 🎛 **OrchestratorAgent — Multi-Agent Controller**
+# 🤖 Agents Explained
 
-This is the master brain that:
+## 🔹 TaskAgent
 
-1. Calls TaskAgent
-2. Routes to Quiz / Help
-3. After quiz → Routes results to MemoryAgent
-4. Returns final response to frontend
+**Purpose**: Turn user-written tasks into structured metadata.
+**Output**: normalized title, keywords, category, complexity, and routing decision.
 
----
+Used for:
 
-# 📂 **Project Structure**
-
-```
-/backend
-    /agents
-        task_agent.py
-        help_agent.py
-        quiz_agent.py
-        memory_agent.py
-        orchestrator_agent.py
-    main.py
-    requirements.txt
-
-/frontend
-    /src
-        App.tsx
-        /views (Home, Progress, Calendar, Profile, Documents)
-        /services (geminiService.ts)
-        /components
-        /types
-        /constants.ts
-```
+* routing
+* planning
+* building context for other agents
 
 ---
 
-# ⚙️ **Backend Execution Instructions**
+## 🔹 QuizAgent
 
-### **1. Set your API key in Kaggle**
+**Purpose**: Verify users actually completed the task.
+Supports:
 
-```python
-%env GOOGLE_API_KEY=your_key_here
+* Multiple-choice quizzes
+* Context-url research checks
+* Networking name plausibility checks
+
+---
+
+## 🔹 HelpAgent
+
+**Purpose**: If the user is stuck or fails verification, HelpAgent generates:
+
+* summaries
+* steps
+* educational resources
+* networking templates
+* custom advice using user profile
+
+---
+
+## 🔹 MemoryAgent
+
+**Purpose**: Maintain long-term user mastery.
+Stores:
+
+* past quiz performance
+* topic mastery scores
+* growing knowledge base
+
+---
+
+# 📂 Folder Structure
+
 ```
-
-### **2. Run FastAPI inside notebook**
-
-```python
-!pkill -f uvicorn
-!uvicorn backend.main:app --host 0.0.0.0 --port 8000
-```
-
-You should see:
-
-```
-INFO: Uvicorn running on http://0.0.0.0:8000
-```
-
-### **3. Test backend**
-
-```python
-import requests
-requests.get("http://127.0.0.1:8000").json()
-```
-
-Should return:
-
-```json
-{"status": "backend running"}
+project-root/
+│
+├── backend/
+│   ├── agents/
+│   │   ├── task_agent.py
+│   │   ├── quiz_agent.py
+│   │   ├── help_agent.py
+│   │   ├── memory_agent.py
+│   │   └── orchestrator_agent.py
+│   ├── data/
+│   │   ├── tasks.json
+│   │   └── profile.json
+│   ├── main.py               # FastAPI backend entrypoint
+│   └── requirements.txt
+│
+└── frontend/
+    ├── index.html
+    ├── package.json
+    ├── vite.config.ts
+    └── src/
+        ├── App.tsx
+        ├── services/geminiService.ts
+        ├── components/...
+        ├── views/...
+        ├── types.ts
+        └── constants.ts
 ```
 
 ---
 
-# 🖥️ **Frontend Execution Instructions**
+# 📦 Prerequisites
 
-The frontend **cannot run inside Kaggle**.
+### 🟥 Required API Key
 
-Move the project to:
+You need a **Google Gemini API key**.
 
-### Option A — **Local machine**
+```
+export GOOGLE_API_KEY="your_api_key_here"
+```
+
+### 🟦 Backend Requirements
+
+Install:
+
+```
+fastapi
+uvicorn
+google-genai
+python-multipart
+```
+
+(Provided in `backend/requirements.txt`)
+
+### 🟩 Frontend Requirements
+
+```
+Node.js ≥ 18
+npm or yarn or pnpm
+```
+
+---
+
+# 🛠 Installation & Running Locally
+
+## 1. Clone the repo
+
+```bash
+git clone https://github.com/yourname/precastinationai.git
+cd precastinationai
+```
+
+---
+
+## 2. Set up backend
+
+```bash
+cd backend
+pip install -r requirements.txt
+export GOOGLE_API_KEY="your_key_here"
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+Backend now runs at:
+
+```
+http://127.0.0.1:8000
+```
+
+---
+
+## 3. Set up frontend
 
 ```bash
 cd frontend
@@ -243,57 +270,89 @@ npm install
 npm run dev
 ```
 
-### Option B — **GitHub Codespaces**
+Frontend runs on Vite, usually:
 
-* Upload repo
-* Open Codespace
-* Run frontend + backend normally
-
-### Option C — **Deploy backend somewhere (Render, Railway)**
-
-Change:
-
-```ts
-const API_BASE = "https://your-backend-url";
+```
+http://localhost:5173
 ```
 
-Then build React:
+---
 
-```bash
-npm run build
+# 🧪 Running Inside Kaggle (Competition Execution)
+
+Because Kaggle disallows background processes, we run FastAPI *inline*:
+
+### 1. Set API key
+
+```python
+%env GOOGLE_API_KEY=your_key
 ```
 
-Deploy anywhere (Vercel, Netlify, etc.)
+### 2. Run FastAPI inside the notebook cell
+
+```python
+!uvicorn backend.main:app --host 0.0.0.0 --port 8000
+```
+
+### 3. Test endpoint
+
+```python
+import requests
+requests.get("http://127.0.0.1:8000").json()
+```
+
+⚠ Note: The frontend cannot run inside Kaggle due to Node restrictions.
+Use GitHub Codespaces, Local machine, or deploy backend → frontend separately.
 
 ---
 
-# 📜 **Features Summary**
+# 🔌 API Routes
 
-### ✔ Drag-and-drop task board
-
-### ✔ Task progress + verification
-
-### ✔ AI help modal with character avatars
-
-### ✔ AI quiz verification flow
-
-### ✔ Calendar view with task overlays
-
-### ✔ Spreadsheet generation via backend
-
-### ✔ Profile with AI character + document upload
-
-### ✔ Local persistent JSON storage
+| Route                   | Method | Description                    |
+| ----------------------- | ------ | ------------------------------ |
+| `/process-task`         | POST   | Run multi-agent workflow start |
+| `/submit-quiz`          | POST   | Submit quiz answers            |
+| `/generate-help`        | POST   | Manual help request            |
+| `/generate-quiz`        | POST   | Manual quiz generation         |
+| `/verify-networking`    | POST   | Validate recruiter names       |
+| `/generate-spreadsheet` | POST   | Create CSV summaries           |
+| `/tasks`                | GET    | Load local tasks               |
+| `/save-tasks`           | POST   | Save tasks                     |
+| `/profile`              | GET    | Load user profile              |
+| `/save-profile`         | POST   | Save profile                   |
 
 ---
 
-# 🎯 **What This Project Demonstrates**
+# 🧰 Tech Stack
 
-* Full multi-agent architecture
-* Real-time coordination between agents
-* True autonomous workflow: normalize → quiz/help → memory
-* Production-ready backend API design
-* Modern React UI using Tailwind, Lucide icons, and modals
-* Integration between Vite frontend ↔ FastAPI backend
+**Backend:**
+
+* FastAPI
+* Google Gemini API
+* Python (async)
+* Multi-agent architecture
+
+**Frontend:**
+
+* React + Vite
+* TypeScript
+* TailwindCSS
+* Lucide icons
+* Zustand (optional store)
+
+**Data:**
+
+* JSON persistence
 
 ---
+
+# 🔮 Future Work
+
+* User emotion prediction
+* Companion voice support
+* Adaptive quiz difficulty
+* Multi-session memory
+* Cloud deployment
+* Real-time collaborative tasks
+* Character animation upgrades
+
