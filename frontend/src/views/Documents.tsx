@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { FileSpreadsheet, Download, Plus, Loader2, FileText } from 'lucide-react';
-import { GeneratedDocument, Task, UserProfile, CharacterType } from '../types';
-import { generateSpreadsheet } from '../services/geminiService';
+import { GeneratedDocument, Task, UserProfile } from '../types';
 import { CharacterIllustration } from '../components/Illustrations';
 
 interface DocumentsProps {
@@ -17,15 +16,28 @@ export const Documents: React.FC<DocumentsProps> = ({ documents, setDocuments, t
   const handleGenerateReport = async () => {
     setIsGenerating(true);
     try {
-      const result = await generateSpreadsheet(tasks, userProfile);
+      const response = await fetch("http://127.0.0.1:8000/generate-report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tasks,
+          user: userProfile
+        })
+      });
+
+      if (!response.ok) throw new Error("Backend error");
+      const result = await response.json();
+
       const newDoc: GeneratedDocument = {
         id: `doc-${Date.now()}`,
         title: result.title,
         type: 'csv',
         date: new Date().toLocaleDateString(),
-        content: result.content
+        content: result.content,
       };
+
       setDocuments([newDoc, ...documents]);
+
     } catch (e) {
       console.error("Failed to generate report", e);
       alert("Sorry, I couldn't generate the report right now.");
@@ -82,21 +94,21 @@ export const Documents: React.FC<DocumentsProps> = ({ documents, setDocuments, t
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {documents.map((doc) => (
             <div 
-                key={doc.id} 
-                className="bg-card border border-gray-800 rounded-2xl p-6 group hover:border-green-500/50 transition-all hover:shadow-xl hover:shadow-green-900/10 flex flex-col"
+              key={doc.id} 
+              className="bg-card border border-gray-800 rounded-2xl p-6 group hover:border-green-500/50 transition-all hover:shadow-xl hover:shadow-green-900/10 flex flex-col"
             >
               <div className="flex items-start justify-between mb-6">
-                 <div className="p-3 bg-green-900/20 rounded-xl text-green-500 group-hover:text-green-400 group-hover:scale-110 transition-all">
+                <div className="p-3 bg-green-900/20 rounded-xl text-green-500 group-hover:text-green-400 group-hover:scale-110 transition-all">
                     <FileSpreadsheet className="w-8 h-8" />
-                 </div>
-                 <span className="text-xs font-medium text-gray-500 bg-gray-800 px-2 py-1 rounded-md">{doc.type.toUpperCase()}</span>
+                </div>
+                <span className="text-xs font-medium text-gray-500 bg-gray-800 px-2 py-1 rounded-md">{doc.type.toUpperCase()}</span>
               </div>
               
               <div className="mb-6 flex-1">
-                  <h3 className="text-lg font-bold text-white mb-1 line-clamp-1" title={doc.title}>{doc.title}</h3>
-                  <p className="text-sm text-gray-500 flex items-center gap-2">
-                      Created: {doc.date}
-                  </p>
+                <h3 className="text-lg font-bold text-white mb-1 line-clamp-1" title={doc.title}>{doc.title}</h3>
+                <p className="text-sm text-gray-500 flex items-center gap-2">
+                  Created: {doc.date}
+                </p>
               </div>
 
               <button 

@@ -11,66 +11,289 @@ PrecastinationAI is an intelligent, companion-driven task management application
 - **Documents & Reporting**: Auto-generate Excel/CSV progress reports of your tasks.
 - **Gamified Progress**: Visual tracking of your productivity.
 
-## Prerequisites
+Here is a **clean, polished, professional README** tailored to your exact repo, architecture, agents, notebooks, and execution flow.
 
-- Node.js (v18 or higher recommended)
-- npm or yarn
-- A Google Gemini API Key (Get one for free at [Google AI Studio](https://aistudio.google.com/))
+It combines:
 
-## Installation
+* **Multi-Agent Backend** (FastAPI + Google Gemini)
+* **Interactive Frontend** (React + Vite + Tailwind)
+* **Local Data Persistence**
+* **Smart Task Verification**
+* **Personalized Help & Learning**
 
-1.  **Clone the repository** (or download the source code).
-    ```bash
-    git clone <repository-url>
-    cd precastination-ai
-    ```
+---
 
-2.  **Install dependencies**:
-    ```bash
-    npm install
-    # or
-    yarn install
-    ```
+# 📘 **Notebook Overview**
 
-## Configuration (Important)
+### **1. `ProcrastinationAI.ipynb` — Agent Creation Notebook**
 
-This application requires a Google Gemini API Key to function. It looks for the key in the `process.env.API_KEY` variable.
+This notebook contains:
 
-1.  Create a file named `.env` in the root directory of the project.
-2.  Add your API key to the file:
+✔ Development of all **AI agents**
+✔ Iterative testing of agent logic
+✔ Running FastAPI in Kaggle
+✔ Direct interaction with agents
+✔ Final API-ready versions of TaskAgent, QuizAgent, HelpAgent & MemoryAgent
 
-    ```env
-    API_KEY=your_google_gemini_api_key_here
-    ```
+### **2. `ProcrastinationAI-Backend.ipynb` — Backend + Frontend Assembly**
 
-    *Note: If you are using Vite, you might need to prefix it as `VITE_API_KEY` and update `services/geminiService.ts` to use `import.meta.env.VITE_API_KEY`, depending on your build tool. For standard webpack/CRA/StackBlitz environments, `process.env.API_KEY` is supported.*
+This notebook contains:
 
-## Running the Application
+✔ Writing the FastAPI backend
+✔ Saving agent files to `/backend/agents`
+✔ Generating the frontend folder structure
+✔ Writing all React, TypeScript, and service files programmatically
+✔ Running and testing the backend API endpoints
+✔ Final folder structure ready for download / deployment
 
-Start the development server:
+---
+
+# 🧠 **AI Agent Architecture**
+
+ProcrastinationAI uses **four fully independent agents**, orchestrated by a master controller.
+Each agent has a single responsibility and communicates only through normalized task packets.
+
+---
+
+## 🔹 **1. TaskAgent — Task Normalization & Routing**
+
+**Purpose:**
+Take raw user tasks and convert them into a clean, structured format the other agents can process.
+
+**Capabilities:**
+
+* Normalizes task titles & descriptions
+* Extracts category, keywords, complexity
+* Decides next step:
+  → **QuizAgent** (if learning/research task)
+  → **HelpAgent** (if user needs guidance)
+  → **MemoryAgent** (if updating long-term knowledge)
+
+**Output Example:**
+
+```json
+{
+  "normalizedTitle": "Learn React Fundamentals",
+  "normalizedDescription": "Study core React concepts.",
+  "category": "EDUCATION",
+  "keywords": ["React", "JSX", "hooks"],
+  "complexity": 4,
+  "nextAgent": "HelpAgent"
+}
+```
+
+---
+
+## 🔹 **2. QuizAgent — Adaptive Knowledge Verification**
+
+**Purpose:**
+Ensure the user has actually learned/researched what they claim.
+
+**Capabilities:**
+
+* Generates dynamic quizzes based on task context
+* Grades user answers
+* Determines pass/fail state
+* Pass → MemoryAgent
+* Fail → HelpAgent
+
+**Quiz Example Output:**
+
+```json
+{
+  "questions": [
+    {
+      "q": "What is JSX used for in React?",
+      "choices": ["Styling", "Logic", "UI markup", "Animations"],
+      "answer": 2
+    }
+  ]
+}
+```
+
+---
+
+## 🔹 **3. HelpAgent — Guidance, Coaching & Resources**
+
+**Purpose:**
+Provide intelligent help to unblock users.
+
+**Capabilities:**
+
+* Generates step-by-step guides
+* Provides explanations in the user's preferred character style
+* Provides actionable resources
+* Reacts when verification fails
+
+**Output Example:**
+
+```json
+{
+  "summary": "Learn fundamental React concepts...",
+  "steps": ["Understand JSX", "Learn components", ...],
+  "resources": [{ "title": "React Docs", "url": "https://react.dev" }]
+}
+```
+
+---
+
+## 🔹 **4. MemoryAgent — Long-Term User Learning**
+
+**Purpose:**
+Store what the user has learned to avoid repeating help.
+
+**Capabilities:**
+
+* Updates persistent memory
+* Enhances future help generation
+* Tracks knowledge progression
+
+Memory is saved into:
+
+```
+backend/data/tasks.json
+backend/data/profile.json
+```
+
+---
+
+# 🎛 **OrchestratorAgent — Multi-Agent Controller**
+
+This is the master brain that:
+
+1. Calls TaskAgent
+2. Routes to Quiz / Help
+3. After quiz → Routes results to MemoryAgent
+4. Returns final response to frontend
+
+---
+
+# 📂 **Project Structure**
+
+```
+/backend
+    /agents
+        task_agent.py
+        help_agent.py
+        quiz_agent.py
+        memory_agent.py
+        orchestrator_agent.py
+    main.py
+    requirements.txt
+
+/frontend
+    /src
+        App.tsx
+        /views (Home, Progress, Calendar, Profile, Documents)
+        /services (geminiService.ts)
+        /components
+        /types
+        /constants.ts
+```
+
+---
+
+# ⚙️ **Backend Execution Instructions**
+
+### **1. Set your API key in Kaggle**
+
+```python
+%env GOOGLE_API_KEY=your_key_here
+```
+
+### **2. Run FastAPI inside notebook**
+
+```python
+!pkill -f uvicorn
+!uvicorn backend.main:app --host 0.0.0.0 --port 8000
+```
+
+You should see:
+
+```
+INFO: Uvicorn running on http://0.0.0.0:8000
+```
+
+### **3. Test backend**
+
+```python
+import requests
+requests.get("http://127.0.0.1:8000").json()
+```
+
+Should return:
+
+```json
+{"status": "backend running"}
+```
+
+---
+
+# 🖥️ **Frontend Execution Instructions**
+
+The frontend **cannot run inside Kaggle**.
+
+Move the project to:
+
+### Option A — **Local machine**
 
 ```bash
-npm start
-# or
+cd frontend
+npm install
 npm run dev
 ```
 
-Open your browser to `http://localhost:3000` (or the port shown in your terminal).
+### Option B — **GitHub Codespaces**
 
-## How to Use
+* Upload repo
+* Open Codespace
+* Run frontend + backend normally
 
-1.  **Profile**: Go to the Profile tab to set your name and **Choose Your Character**. This character will be your productivity buddy.
-2.  **Create Task**: On the Home screen, click "New Task". Fill in details and select an AI Verification level.
-3.  **Do the Work**: Drag the task to "In Progress".
-4.  **Check In**: When finished, click "Check In".
-    *   **Yes**: The AI will quiz you or verify your work.
-    *   **No**: The AI will offer to help you finish the task with resources and guides.
+### Option C — **Deploy backend somewhere (Render, Railway)**
 
-## Technologies
+Change:
 
-- **Frontend**: React, TypeScript
-- **Styling**: Tailwind CSS
-- **AI**: Google Gemini API (@google/genai)
-- **Icons**: Lucide React
-- **Drag & Drop**: @hello-pangea/dnd
-- **Date Management**: date-fns
+```ts
+const API_BASE = "https://your-backend-url";
+```
+
+Then build React:
+
+```bash
+npm run build
+```
+
+Deploy anywhere (Vercel, Netlify, etc.)
+
+---
+
+# 📜 **Features Summary**
+
+### ✔ Drag-and-drop task board
+
+### ✔ Task progress + verification
+
+### ✔ AI help modal with character avatars
+
+### ✔ AI quiz verification flow
+
+### ✔ Calendar view with task overlays
+
+### ✔ Spreadsheet generation via backend
+
+### ✔ Profile with AI character + document upload
+
+### ✔ Local persistent JSON storage
+
+---
+
+# 🎯 **What This Project Demonstrates**
+
+* Full multi-agent architecture
+* Real-time coordination between agents
+* True autonomous workflow: normalize → quiz/help → memory
+* Production-ready backend API design
+* Modern React UI using Tailwind, Lucide icons, and modals
+* Integration between Vite frontend ↔ FastAPI backend
+
+---

@@ -32,25 +32,26 @@ export const Calendar: React.FC<CalendarProps> = ({ tasks, setActiveTab }) => {
       <header className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-white">Calendar</h1>
         <div className="flex items-center gap-4">
-            <button 
-                onClick={handlePrevMonth}
-                className="p-2 hover:bg-gray-800 rounded-full transition-colors text-gray-400 hover:text-white"
-            >
-                <ChevronLeft className="w-6 h-6" />
-            </button>
-            <div className="text-xl font-medium text-primary w-40 text-center select-none">
-                {format(currentDate, 'MMMM yyyy')}
-            </div>
-            <button 
-                onClick={handleNextMonth}
-                className="p-2 hover:bg-gray-800 rounded-full transition-colors text-gray-400 hover:text-white"
-            >
-                <ChevronRight className="w-6 h-6" />
-            </button>
+          <button 
+            onClick={handlePrevMonth}
+            className="p-2 hover:bg-gray-800 rounded-full transition-colors text-gray-400 hover:text-white"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <div className="text-xl font-medium text-primary w-40 text-center select-none">
+            {format(currentDate, 'MMMM yyyy')}
+          </div>
+          <button 
+            onClick={handleNextMonth}
+            className="p-2 hover:bg-gray-800 rounded-full transition-colors text-gray-400 hover:text-white"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
         </div>
       </header>
 
       <div className="flex-1 bg-card border border-gray-800 rounded-2xl overflow-hidden flex flex-col shadow-xl">
+        
         {/* Days Header */}
         <div className="grid grid-cols-7 border-b border-gray-800 bg-gray-900/50">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
@@ -70,7 +71,7 @@ export const Calendar: React.FC<CalendarProps> = ({ tasks, setActiveTab }) => {
               <div 
                 key={idx} 
                 className={`border-b border-r border-gray-800 p-2 min-h-[100px] relative hover:bg-gray-800/30 transition-colors group ${
-                   !isSameMonth(day, currentDate) ? 'bg-gray-900/50 text-gray-700' : 'text-gray-300'
+                  !isSameMonth(day, currentDate) ? 'bg-gray-900/50 text-gray-700' : 'text-gray-300'
                 }`}
               >
                 <span className={`text-sm font-medium p-1 rounded-full w-8 h-8 flex items-center justify-center ${
@@ -98,6 +99,7 @@ export const Calendar: React.FC<CalendarProps> = ({ tasks, setActiveTab }) => {
             );
           })}
         </div>
+
       </div>
     </div>
   );
