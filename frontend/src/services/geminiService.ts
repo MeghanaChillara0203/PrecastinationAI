@@ -5,7 +5,9 @@ import { Task, UserProfile } from "../types";
 // The backend URL (Kaggle notebook runs FastAPI at localhost:8000)
 const API_BASE = "http://127.0.0.1:8000";
 
-// Helper: POST wrapper
+//---------------------------------------------------------
+// POST helper
+//---------------------------------------------------------
 async function postJson<T>(path: string, body: any): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     method: "POST",
@@ -13,11 +15,18 @@ async function postJson<T>(path: string, body: any): Promise<T> {
     body: JSON.stringify(body)
   });
 
-  if (!res.ok) {
-    throw new Error(`Request failed: ${res.status}`);
+  let data: any = {};
+  try {
+    data = await res.json();
+  } catch (e) {
+    throw new Error(`Invalid JSON from backend: ${path}`);
   }
 
-  return await res.json();
+  if (!res.ok) {
+    throw new Error(`Request failed: ${res.status} - ${JSON.stringify(data)}`);
+  }
+
+  return data;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -25,12 +34,21 @@ async function postJson<T>(path: string, body: any): Promise<T> {
 /* -------------------------------------------------------------------------- */
 
 export async function generateQuizForTask(task: Task, contextUrl?: string) {
-  return postJson("/process-task", {
+  const resp: any = await postJson("/process-task", {
     title: task.title,
     description: task.description,
     category: task.category,
     contextUrl
-  }).then((resp) => resp.quiz?.questions || []);
+  });
+
+  // ================================ SAFE PARSING ================================
+  // We always return an array (never undefined)
+  const questions =
+    Array.isArray(resp?.quiz?.questions)
+      ? resp.quiz.questions
+      : [];
+
+  return questions;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -38,12 +56,35 @@ export async function generateQuizForTask(task: Task, contextUrl?: string) {
 /* -------------------------------------------------------------------------- */
 
 export async function getHelpForTask(task: Task, user: UserProfile) {
-  return postJson("/process-task", {
+  const resp: any = await postJson("/process-task", {
     title: task.title,
     description: task.description,
     category: task.category,
     userProfile: user
-  }).then((resp) => resp.help);
+  });
+
+  // Backend may return:
+  // { help: {...} }
+  // { stage: "help", help: {...} }
+  // Or even the help object directly (rare)
+
+  const help = resp?.help || resp;
+
+  // Return null if malformed
+  if (!help || typeof help !== "object") return null;
+
+  // Guaranteed normalized object
+  return {
+    summary: help.summary || "",
+    keyPoints: help.keyPoints || help.steps || [],
+    actionableSteps: help.actionableSteps || help.steps || [],
+    messageDraft: help.messageDraft || null,
+    resources: (help.resources || []).map((r: any) => ({
+      type: r.type || "RESOURCE",
+      title: r.title,
+      url: r.url
+    }))
+  };
 }
 
 /* -------------------------------------------------------------------------- */
@@ -51,10 +92,12 @@ export async function getHelpForTask(task: Task, user: UserProfile) {
 /* -------------------------------------------------------------------------- */
 
 export async function verifyNetworkingNames(names: string[], task: Task) {
-  return postJson("/verify-networking", {
+  const resp: any = await postJson("/verify-networking", {
     names,
     task
-  }).then((resp) => resp.verified);
+  });
+
+  return !!resp?.verified;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -66,7 +109,7 @@ export async function submitQuizAnswers(
   quiz: any,
   userAnswers: number[]
 ) {
-  return postJson("/submit-quiz", {
+  return await postJson("/submit-quiz", {
     normalized: normalizedTask,
     quiz,
     answers: userAnswers
@@ -78,7 +121,7 @@ export async function submitQuizAnswers(
 /* -------------------------------------------------------------------------- */
 
 export async function generateSpreadsheet(tasks: Task[], user: UserProfile) {
-  return postJson("/generate-spreadsheet", {
+  return await postJson("/generate-spreadsheet", {
     tasks,
     user
   });

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Sidebar } from './components/Sidebar';
-import { Home } from './views/Home';
-import { Progress } from './views/Progress';
-import { Profile } from './views/Profile';
-import { Calendar } from './views/Calendar';
-import { Documents } from './views/Documents';
-import { Task, UserProfile, CharacterType, GeneratedDocument } from './types';
-import { MOCK_INITIAL_TASKS } from './constants';
+import { Sidebar } from './frontend/src/components/Sidebar';
+import { Home } from './frontend/src/views/Home';
+import { Progress } from './frontend/src/views/Progress';
+import { Profile } from './frontend/src/views/Profile';
+import { Calendar } from './frontend/src/views/Calendar';
+import { Documents } from './frontend/src/views/Documents';
+import { Task, UserProfile, CharacterType, GeneratedDocument } from './frontend/src/types';
+import { MOCK_INITIAL_TASKS } from './frontend/src/constants';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('home');
